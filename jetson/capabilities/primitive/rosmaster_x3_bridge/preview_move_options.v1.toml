@@ -1,0 +1,13 @@
+# Server-controlled nearby safe-option discovery.
+# The caller only chooses a result-count limit from 1 through 5.
+# Coordinates and all safety thresholds remain provider-controlled.
+# This capability never sends a goal or publishes /cmd_vel.
+
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/preview_move_options"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/PreviewMoveOptions.srv"
+
+[mode]
+type = "rpc"

@@ -1,0 +1,19 @@
+# Read-only preparation of a previously previewed navigation candidate.
+#
+# This request must not send a navigation goal or publish /cmd_vel.
+# The provider will revalidate:
+# - distance from the latest AMCL pose
+# - target and surrounding global-costmap cells
+# - /move_base/make_plan path availability
+#
+# A successful response may contain a short-lived, one-time confirmation token.
+float64 x
+float64 y
+float64 yaw_deg
+float64 window
+int32 goal_cost_limit
+float64 plan_tolerance
+bool strict_high_cost
+---
+# JSON result containing validation evidence and confirmation-token metadata.
+std_msgs/String result_json

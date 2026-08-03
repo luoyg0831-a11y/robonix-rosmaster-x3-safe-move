@@ -1,0 +1,7 @@
+# Request up to five server-generated nearby safe move options.
+# The caller cannot provide coordinates or relax any safety threshold.
+uint8 max_options
+---
+# JSON result containing the short-lived session and safe options.
+# This capability never sends a navigation goal or publishes /cmd_vel.
+std_msgs/String result_json

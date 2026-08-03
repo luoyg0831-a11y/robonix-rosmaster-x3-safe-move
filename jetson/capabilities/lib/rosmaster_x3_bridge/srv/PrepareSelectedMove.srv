@@ -1,0 +1,8 @@
+# Select one option from a short-lived server-side move-options session.
+# The caller cannot provide target coordinates or validation thresholds.
+string session_id
+uint8 option_id
+---
+# JSON result containing second-validation evidence and a prepared token.
+# This capability never sends a navigation goal or publishes /cmd_vel.
+std_msgs/String result_json

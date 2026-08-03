@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT=/home/jetson/rosmaster_x3_deploy
+PKG="$ROOT/primitives/rosmaster_x3_bridge"
+
+unset PYTHONPATH PYTHONHOME PYTHONNOUSERSITE ROS_HOSTNAME
+unset X3_ALLOW_NAV_GOAL X3_MAX_NAV_GOAL_DISTANCE_M
+unset X3_ALLOW_PREPARED_NAV_EXECUTION
+unset X3_PREPARED_NAV_EXECUTION_BUDGET_SEC
+
+source /home/jetson/miniforge3/etc/profile.d/conda.sh
+conda activate robonix
+source /home/jetson/.cargo/env
+
+export ROS_MASTER_URI=http://127.0.0.1:11311
+export ROS_IP=127.0.0.1
+export PYTHONPATH="$(rbnx path robonix-api):/home/jetson/x3_rosbridge_adapter/scripts:$PKG:$PKG/rosmaster_x3_bridge:$PKG/rbnx-build/codegen/robonix_mcp_types:$PKG/rbnx-build/codegen/proto_gen"
+
+exec python3 "$ROOT/scripts/move_base_cli.py" "$@"

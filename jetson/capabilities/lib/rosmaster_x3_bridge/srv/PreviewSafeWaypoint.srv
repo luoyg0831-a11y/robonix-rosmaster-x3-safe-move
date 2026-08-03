@@ -1,0 +1,27 @@
+# Read-only nearby safe waypoint preview parameters.
+#
+# The provider must validate all values before use.
+# This tool must not modify x3_waypoints.json.
+# This tool must not send navigation goals.
+# This tool must not publish /cmd_vel.
+
+float64 min_radius
+float64 max_radius
+float64 step_radius
+int32 angles
+float64 window
+int32 goal_cost_limit
+float64 plan_tolerance
+bool strict_high_cost
+---
+# JSON result string.
+#
+# The result should contain:
+# - validated input parameters
+# - current AMCL pose
+# - costmap metadata and candidate-window evidence
+# - candidate totals and accepted candidates
+# - make_plan pose counts
+# - failure statistics
+# - explicit read-only safety evidence
+std_msgs/String result_json

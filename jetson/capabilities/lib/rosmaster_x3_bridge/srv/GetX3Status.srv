@@ -1,0 +1,5 @@
+# Empty request.
+---
+# JSON string containing odom, scan summary, amcl pose, move_base status,
+# and rosbridge connection state.
+std_msgs/String status_json

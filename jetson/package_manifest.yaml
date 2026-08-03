@@ -1,0 +1,24 @@
+manifestVersion: 1
+
+build: bash scripts/build.sh
+
+start: bash scripts/start.sh
+
+package:
+  name: com.vendor.rosmaster_x3_bridge
+  version: 0.0.1
+  vendor: vendor
+  description: ROSMASTER X3 ROS1 rosbridge primitive provider.
+  license: Apache-2.0
+
+capabilities:
+  - name: robonix/primitive/rosmaster_x3_bridge/get_status
+  - name: robonix/primitive/rosmaster_x3_bridge/check_nav_ready
+  - name: robonix/primitive/rosmaster_x3_bridge/preview_safe_waypoint
+  - name: robonix/primitive/rosmaster_x3_bridge/prepare_safe_navigation
+  - name: robonix/primitive/rosmaster_x3_bridge/preview_move_options
+  - name: robonix/primitive/rosmaster_x3_bridge/prepare_selected_move
+  - name: robonix/primitive/rosmaster_x3_bridge/execute_prepared_navigation
+  - name: robonix/primitive/rosmaster_x3_bridge/cancel_nav_goal
+
+depends: []

@@ -1,0 +1,12 @@
+# Execute a selected move only after explicit confirmation and a third
+# server-side safety validation. The token is consumed before goal publish.
+# Success requires correlated move_base SUCCEEDED plus read-only motion evidence.
+
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/execute_prepared_navigation"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/ExecutePreparedNavigation.srv"
+
+[mode]
+type = "rpc"

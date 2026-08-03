@@ -1,0 +1,11 @@
+# ROSMASTER X3 navigation cancel command.
+# This cancels the current ROS1 move_base goal through /move_base/cancel.
+# It must not publish raw /cmd_vel.
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/cancel_nav_goal"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/CancelNavGoal.srv"
+
+[mode]
+type = "rpc"

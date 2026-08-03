@@ -1,0 +1,7 @@
+# Empty request.
+# Read-only navigation readiness check.
+# This tool must not publish /cmd_vel or send navigation goals.
+---
+# JSON result string.
+# Checks rosbridge, odom, scan, AMCL pose and move_base status topic.
+std_msgs/String result_json

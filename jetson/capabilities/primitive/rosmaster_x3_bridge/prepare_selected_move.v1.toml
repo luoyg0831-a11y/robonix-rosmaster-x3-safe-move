@@ -1,0 +1,13 @@
+# Revalidate and prepare an option selected from a server-side session.
+# The caller submits only session_id and option_id; target coordinates are
+# loaded from process memory. This capability never sends a goal or
+# publishes /cmd_vel.
+
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/prepare_selected_move"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/PrepareSelectedMove.srv"
+
+[mode]
+type = "rpc"

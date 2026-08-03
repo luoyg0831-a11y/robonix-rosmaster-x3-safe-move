@@ -1,0 +1,11 @@
+# ROSMASTER X3 read-only status query.
+# This tool reads ROS1 state through rosbridge + roslibpy.
+# It must not publish /cmd_vel or send navigation goals.
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/get_status"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/GetX3Status.srv"
+
+[mode]
+type = "rpc"

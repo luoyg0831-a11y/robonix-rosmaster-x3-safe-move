@@ -1,0 +1,11 @@
+# ROSMASTER X3 read-only navigation readiness check.
+# This checks whether ROS navigation prerequisites are available.
+# It must not publish /cmd_vel or send navigation goals.
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/check_nav_ready"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/CheckNavReady.srv"
+
+[mode]
+type = "rpc"

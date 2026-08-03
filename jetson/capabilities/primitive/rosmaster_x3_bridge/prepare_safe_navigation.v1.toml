@@ -1,0 +1,11 @@
+# Read-only candidate revalidation and confirmation preparation.
+# This capability does not execute navigation.
+
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/prepare_safe_navigation"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/PrepareSafeNavigation.srv"
+
+[mode]
+type = "rpc"

@@ -1,0 +1,5 @@
+# Empty request.
+---
+# JSON result string.
+# Includes canceled flag and safety notes.
+std_msgs/String result_json

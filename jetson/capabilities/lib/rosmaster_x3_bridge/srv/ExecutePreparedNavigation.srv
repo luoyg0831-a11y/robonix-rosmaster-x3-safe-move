@@ -1,0 +1,9 @@
+# Execute only a server-authorized, one-time prepared navigation token.
+# The caller cannot provide target coordinates or validation thresholds.
+string token
+bool allow_execute
+string confirmation_text
+---
+# JSON result containing claim, third-validation, correlated move_base status,
+# terminal outcome, and read-only cmd_vel/AMCL motion evidence.
+std_msgs/String result_json

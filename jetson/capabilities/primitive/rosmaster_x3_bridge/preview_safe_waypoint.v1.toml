@@ -1,0 +1,16 @@
+# ROSMASTER X3 read-only nearby safe waypoint preview.
+#
+# This searches candidate poses using AMCL, the global costmap,
+# and /move_base/make_plan.
+#
+# It must not modify x3_waypoints.json.
+# It must not publish /cmd_vel.
+# It must not send navigation goals.
+[contract]
+id      = "robonix/primitive/rosmaster_x3_bridge/preview_safe_waypoint"
+version = "1"
+kind    = "primitive"
+idl     = "rosmaster_x3_bridge/srv/PreviewSafeWaypoint.srv"
+
+[mode]
+type = "rpc"
