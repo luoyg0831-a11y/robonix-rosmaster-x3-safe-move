@@ -85,9 +85,8 @@ evidence/                         脱敏后的实验结论，不保存原始现�
 
 ## 与上游 Robonix 的关系
 
-本工程基于旧版 Python Robonix 包机制、ROS1 Melodic、rosbridge 和 `move_base`。当前 [syswonder/robonix](https://github.com/syswonder/robonix) `main` 已迁移到 Rust + ROS2，并使用 `rbnx_manifest.yaml`。本仓库是兼容性项目总结，不宣称可直接安装到当前上游。迁移方案见 [上游对齐](docs/upstream-alignment.md)。
+本工程基于较早版本的 Python Robonix API、ROS1 Melodic、rosbridge 和 `move_base`。当前 [syswonder/robonix](https://github.com/syswonder/robonix) `dev` 仍使用 `package_manifest.yaml`，但其 Python API、生命周期和 capability contract 已演进，并以 ROS2 为主要集成路径。本仓库是兼容性项目总结，不宣称可直接安装到当前上游。迁移方案见 [上游对齐](docs/upstream-alignment.md)。
 
 ## 许可证
 
 本地历史 manifest 将原创工程代码声明为 Apache-2.0。第三方 Robonix、ROS、Yahboom 文件和生成代码仍受各自许可证约束；当前快照没有收录来源尚未确认的 Yahboom ROS 配置全文。
-

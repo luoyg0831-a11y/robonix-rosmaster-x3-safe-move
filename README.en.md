@@ -28,9 +28,8 @@ These checks use fake ROS/Robonix modules and do not constitute hardware accepta
 
 ## Upstream compatibility
 
-This snapshot targets an older Python Robonix package model with Ubuntu 18.04, ROS1 Melodic, rosbridge, and ROS `move_base`. The current [syswonder/robonix](https://github.com/syswonder/robonix) main branch uses Rust, ROS2, and `rbnx_manifest.yaml`. See [upstream alignment](docs/upstream-alignment.md) for the proposed provider/skill migration.
+This snapshot targets an earlier Robonix Python API with Ubuntu 18.04, ROS1 Melodic, rosbridge, and ROS `move_base`. The current [syswonder/robonix](https://github.com/syswonder/robonix) `dev` branch still uses `package_manifest.yaml`, but its Python API, lifecycle, and capability contracts have evolved and ROS2 is the primary integration path. See [upstream alignment](docs/upstream-alignment.md) for the proposed service integration.
 
 ## License
 
 The historical package manifest declares the original project code as Apache-2.0. Robonix, ROS, Yahboom sources, generated code, and other third-party components remain under their respective licenses.
-

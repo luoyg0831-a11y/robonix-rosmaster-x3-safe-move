@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Corrected the compatibility notes against the current upstream `dev` branch.
+- Added the upstream ROSMASTER X3 navigation integration proposal.
+
 ## 0.1.0-local-preview - 2026-08-03
 
 - Curated the local 0.08 m candidate into a public, secret-free snapshot.
