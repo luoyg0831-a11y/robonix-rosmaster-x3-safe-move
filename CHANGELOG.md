@@ -4,6 +4,8 @@
 
 - Corrected the compatibility notes against the current upstream `dev` branch.
 - Added the upstream ROSMASTER X3 navigation integration proposal.
+- Aligned the documented checks with the seven-file syntax validation.
+- Clarified the status of the offline workflow template and integration record.
 
 ## 0.1.0-local-preview - 2026-08-03
 

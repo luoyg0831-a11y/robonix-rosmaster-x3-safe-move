@@ -54,7 +54,14 @@ move_base
 在仓库根目录运行：
 
 ```bash
-python -m py_compile jetson/main.py jetson/x3_bridge.py jetson/scripts/move_base_cli.py
+python -m py_compile \
+  jetson/main.py \
+  jetson/x3_bridge.py \
+  jetson/scripts/move_base_cli.py \
+  jetson/stage1_unit_test.py \
+  jetson/stage2_unit_test.py \
+  jetson/x3_bridge_navigation_unit_test.py \
+  jetson/tests/move_base_cli_unit_test.py
 python jetson/stage1_unit_test.py
 python jetson/stage2_unit_test.py
 python jetson/x3_bridge_navigation_unit_test.py
@@ -62,6 +69,7 @@ python jetson/tests/move_base_cli_unit_test.py
 ```
 
 这些测试使用 fake ROS/Robonix 模块，只验证离线逻辑，不代表真实机器人通过。
+`ci/offline-tests.yml` 保存相同检查的工作流模板；它不在 `.github/workflows/` 下，因此当前不会由 GitHub Actions 自动执行。
 
 ## 目录
 
@@ -85,7 +93,7 @@ evidence/                         脱敏后的实验结论，不保存原始现�
 
 ## 与上游 Robonix 的关系
 
-本工程基于较早版本的 Python Robonix API、ROS1 Melodic、rosbridge 和 `move_base`。当前 [syswonder/robonix](https://github.com/syswonder/robonix) `dev` 仍使用 `package_manifest.yaml`，但其 Python API、生命周期和 capability contract 已演进，并以 ROS2 为主要集成路径。本仓库是兼容性项目总结，不宣称可直接安装到当前上游。迁移方案见 [上游对齐](docs/upstream-alignment.md)。
+本工程基于较早版本的 Python Robonix API、ROS1 Melodic、rosbridge 和 `move_base`。当前 [syswonder/robonix](https://github.com/syswonder/robonix) `dev` 仍使用 `package_manifest.yaml`，但其 Python API、生命周期和 capability contract 已演进，并以 ROS2 为主要集成路径。本仓库是兼容性项目总结，不宣称可直接安装到当前上游。迁移方案见 [上游对齐](docs/upstream-alignment.md)和[集成提案](docs/upstream-issue-proposal.md)。
 
 ## 许可证
 

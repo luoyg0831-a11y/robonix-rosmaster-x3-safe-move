@@ -1,6 +1,6 @@
 # Deployment Gap
 
-This repository was assembled from a local engineering snapshot while the Jetson was unavailable. It intentionally does not invent missing production files.
+This repository was assembled from a local engineering snapshot while the Jetson was unavailable. Production files that could not be verified are listed below as pending.
 
 ## Present locally
 
@@ -23,4 +23,3 @@ This repository was assembled from a local engineering snapshot while the Jetson
 ## Finalization rule
 
 Remote files must first be copied into a dated read-only inventory with SHA256 values. The local candidate must never overwrite an unknown remote version. After comparison, production files can be reconciled in a new release without rewriting the `0.1.0-local-preview` history.
-

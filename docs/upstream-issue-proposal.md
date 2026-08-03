@@ -1,3 +1,7 @@
+# ROSMASTER X3 ROS1 Integration Proposal
+
+Status: submitted to `syswonder/robonix` as [Issue #212](https://github.com/syswonder/robonix/issues/212).
+
 ## Feature description
 
 Add a documented integration path for Yahboom ROSMASTER X3 robots running ROS1 Melodic and ROS `move_base`, based on a public safe short-distance navigation prototype. The prototype discovers up to five server-generated safe poses, accepts a numbered choice, revalidates it, requires explicit confirmation, consumes a one-time token, performs a final safety check, publishes one navigation goal, and reports correlated execution evidence.

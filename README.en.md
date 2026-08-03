@@ -17,7 +17,14 @@ This repository summarizes a ROS1 safety layer for short-distance navigation on 
 ## Offline checks
 
 ```bash
-python -m py_compile jetson/main.py jetson/x3_bridge.py jetson/scripts/move_base_cli.py
+python -m py_compile \
+  jetson/main.py \
+  jetson/x3_bridge.py \
+  jetson/scripts/move_base_cli.py \
+  jetson/stage1_unit_test.py \
+  jetson/stage2_unit_test.py \
+  jetson/x3_bridge_navigation_unit_test.py \
+  jetson/tests/move_base_cli_unit_test.py
 python jetson/stage1_unit_test.py
 python jetson/stage2_unit_test.py
 python jetson/x3_bridge_navigation_unit_test.py
@@ -25,10 +32,11 @@ python jetson/tests/move_base_cli_unit_test.py
 ```
 
 These checks use fake ROS/Robonix modules and do not constitute hardware acceptance.
+`ci/offline-tests.yml` contains the equivalent workflow template. It is not under `.github/workflows/`, so GitHub Actions does not run it automatically.
 
 ## Upstream compatibility
 
-This snapshot targets an earlier Robonix Python API with Ubuntu 18.04, ROS1 Melodic, rosbridge, and ROS `move_base`. The current [syswonder/robonix](https://github.com/syswonder/robonix) `dev` branch still uses `package_manifest.yaml`, but its Python API, lifecycle, and capability contracts have evolved and ROS2 is the primary integration path. See [upstream alignment](docs/upstream-alignment.md) for the proposed service integration.
+This snapshot targets an earlier Robonix Python API with Ubuntu 18.04, ROS1 Melodic, rosbridge, and ROS `move_base`. The current [syswonder/robonix](https://github.com/syswonder/robonix) `dev` branch still uses `package_manifest.yaml`, but its Python API, lifecycle, and capability contracts have evolved and ROS2 is the primary integration path. See [upstream alignment](docs/upstream-alignment.md) and the [integration proposal](docs/upstream-issue-proposal.md).
 
 ## License
 
