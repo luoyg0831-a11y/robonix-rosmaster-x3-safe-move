@@ -5,8 +5,8 @@
 - Restored the repository workflow used by the offline, metadata, safety, and
   checksum checks.
 - Expanded `config.spec` with connection failure conditions and examples.
-- Published the candidate on the GitHub default branch and passed the repository
-  offline workflow; the upstream Catalog PR remains separate.
+- Published the candidate on the GitHub default branch, passed the repository
+  offline workflow, and submitted upstream Catalog PR #21.
 
 ## 0.2.0-candidate.1 - 2026-08-04
 

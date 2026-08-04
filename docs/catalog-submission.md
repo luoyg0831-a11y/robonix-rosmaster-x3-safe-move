@@ -26,9 +26,10 @@ must not be duplicated in `catalog.yaml`.
 | Executable build/start scripts | Git mode `100755` |
 | Package validation/build | PASS on Jetson staging before metadata-only Catalog update |
 | Default branch contains this candidate | Published; repository workflow PASS |
-| Catalog PR | Not created |
+| Catalog PR | Submitted as `syswonder/robonix-package-catalog#21`; maintainer check pending |
 | Hardware acceptance | Not complete; not a Catalog metadata prerequisite, but a release Warning |
 
 Catalog CI reads the target repository default branch through the GitHub API.
-The root manifest is now visible on that branch; the Catalog PR remains a
-separate upstream submission.
+The root manifest is now visible on that branch. PR #21 contains only the
+required `name + repo` entry; its first external workflow run is awaiting
+maintainer approval.
