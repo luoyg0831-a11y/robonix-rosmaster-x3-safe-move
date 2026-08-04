@@ -20,14 +20,15 @@ must not be duplicated in `catalog.yaml`.
 
 | Requirement | State |
 |---|---|
-| Root `package_manifest.yaml` | Ready locally |
+| Root `package_manifest.yaml` | Published on the default branch |
 | Required Catalog metadata | Present |
 | Capability names and local TOML paths | Present, eight guarded capabilities |
 | Executable build/start scripts | Git mode `100755` |
 | Package validation/build | PASS on Jetson staging before metadata-only Catalog update |
-| Default branch contains this candidate | Pending GitHub push |
+| Default branch contains this candidate | Published; repository workflow PASS |
 | Catalog PR | Not created |
 | Hardware acceptance | Not complete; not a Catalog metadata prerequisite, but a release Warning |
 
 Catalog CI reads the target repository default branch through the GitHub API.
-Do not create the Catalog PR until the root manifest is visible on that branch.
+The root manifest is now visible on that branch; the Catalog PR remains a
+separate upstream submission.

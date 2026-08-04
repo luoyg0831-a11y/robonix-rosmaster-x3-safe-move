@@ -19,4 +19,5 @@
 
 仓库现已按 Robonix Package Catalog 普通软件包流程提供根
 `package_manifest.yaml`、发布元数据、能力路径、`config.spec`、构建/启动入口和
-Catalog PR 片段。当前仅整理在 Windows 桌面，尚未推送默认分支或提交 Catalog PR。
+Catalog PR 片段。候选版本已推送到 GitHub 默认分支并通过仓库离线工作流；Catalog PR
+尚未提交，0.08 m 版本也尚未完成生产部署与实车验收。

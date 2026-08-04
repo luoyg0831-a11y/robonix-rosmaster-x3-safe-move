@@ -69,7 +69,8 @@ python tools/audit_public_snapshot.py
 
 包仓库准备完成后，Catalog PR 只应向 `syswonder/robonix-package-catalog`
 的 `catalog.yaml` 增加一条 `name + repo`。所需片段和发布前检查见
-[Catalog 提交说明](docs/catalog-submission.md)。当前仅整理桌面文件，未提交 Catalog PR。
+[Catalog 提交说明](docs/catalog-submission.md)。候选版本已推送到 GitHub 默认分支，
+离线工作流已通过；Catalog PR 尚未提交。
 
 ## 许可证
 
