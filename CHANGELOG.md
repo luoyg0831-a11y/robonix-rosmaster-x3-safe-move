@@ -6,7 +6,7 @@
   checksum checks.
 - Expanded `config.spec` with connection failure conditions and examples.
 - Published the candidate on the GitHub default branch, passed the repository
-  offline workflow, and submitted upstream Catalog PR #21.
+  offline workflow, and submitted upstream Catalog PR #21; Catalog CI passes.
 
 ## 0.2.0-candidate.1 - 2026-08-04
 

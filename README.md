@@ -71,7 +71,8 @@ python tools/audit_public_snapshot.py
 的 `catalog.yaml` 增加一条 `name + repo`。所需片段和发布前检查见
 [Catalog 提交说明](docs/catalog-submission.md)。候选版本已推送到 GitHub 默认分支，
 离线工作流已通过；Catalog PR 已提交为
-[#21](https://github.com/syswonder/robonix-package-catalog/pull/21)，等待维护者检查。
+[#21](https://github.com/syswonder/robonix-package-catalog/pull/21)，Catalog CI 已通过，
+等待维护者合并。
 
 ## 许可证
 

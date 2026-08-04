@@ -12,8 +12,8 @@ Published package state:
 
 Still open:
 
-- the upstream Package Catalog PR #21 is open; its first external workflow run
-  is awaiting maintainer approval;
+- the upstream Package Catalog PR #21 passes Catalog CI and is awaiting
+  maintainer merge;
 - production remains on the verified 0.07 m provider;
 - the real ROS no-goal dry-run stopped fail-closed at `amcl_unavailable`;
 - production installation of the 0.08 m candidate is not authorized;
