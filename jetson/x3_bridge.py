@@ -958,9 +958,9 @@ class X3Bridge:
             raise ValueError('linear watchdog limit is out of range')
         if not 0.20 <= max_angular_rps <= 1.20:
             raise ValueError('angular watchdog limit is out of range')
-        if not 0.10 <= max_odom_path_m <= 0.20:
+        if not 0.01 <= max_odom_path_m <= 0.10:
             raise ValueError('odometry watchdog limit is out of range')
-        if not 0.10 <= max_amcl_displacement_m <= 0.20:
+        if not 0.01 <= max_amcl_displacement_m <= 0.10:
             raise ValueError('AMCL watchdog limit is out of range')
         if not 0.01 <= cancel_timeout <= 10.0:
             raise ValueError('cancel timeout is out of range')

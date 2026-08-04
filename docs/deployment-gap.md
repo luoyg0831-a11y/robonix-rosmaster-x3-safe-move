@@ -1,25 +1,21 @@
 # Deployment Gap
 
-This repository was assembled from a local engineering snapshot while the Jetson was unavailable. Production files that could not be verified are listed below as pending.
+Completed: full production 0.07 m download and diff, date-stamped verified
+backup, deployment and command mapping, environment/codegen source recovery,
+Jetson Python 3.10 syntax, four offline suites, and isolated
+`rbnx validate/build/validate`.
 
-## Present locally
+Still open:
 
-- 0.08 m candidate `main.py`
-- deployed-generation `x3_bridge.py` and CLI snapshots
-- public safe capability contracts and service definitions
-- wrapper and command-install scripts
-- four offline test suites
+- the Catalog-facing metadata update has not been pushed or revalidated by
+  Catalog CI;
+- production remains on the verified 0.07 m provider;
+- the real ROS no-goal dry-run stopped fail-closed at `amcl_unavailable`;
+- production installation of the 0.08 m candidate is not authorized;
+- no 0.08 m hardware movement or repeated acceptance has been performed;
+- vendor ROS package files contain unresolved license declarations and are not
+  redistributed.
 
-## Must be recovered or verified over SSH
-
-- exact `/home/jetson/robonix` commit and dirty state;
-- current production hashes before any replacement;
-- package `scripts/build.sh` and `scripts/start.sh`;
-- generated Robonix code provenance and rebuild instructions;
-- exact ROS launch/config file provenance and licensed diffs;
-- current command symlink and environment setup;
-- final no-motion and hardware acceptance evidence.
-
-## Finalization rule
-
-Remote files must first be copied into a dated read-only inventory with SHA256 values. The local candidate must never overwrite an unknown remote version. After comparison, production files can be reconciled in a new release without rewriting the `0.1.0-local-preview` history.
+The dated backup must remain intact. Any later production change requires a new
+hash comparison, successful fresh-AMCL/no-goal dry-run, and separate on-site
+motion authorization.

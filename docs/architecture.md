@@ -18,7 +18,8 @@ flowchart TD
     P --> R["AMCL + global costmap + make_plan"]
     C --> S["prepare_selected_move"]
     S --> T["Second validation + single-use token"]
-    C --> E["execute_prepared_navigation"]
+    T --> H["Display prepared target + exact operator confirmation"]
+    H --> E["execute_prepared_navigation"]
     E --> V["Execution gate + third validation"]
     V --> B["X3Bridge.send_navigation_goal_pose"]
     B --> M["ROS move_base"]
@@ -50,10 +51,11 @@ flowchart TD
 
 - Provides the numbered candidate workflow.
 - Normalizes Unicode and pasted terminal input.
+- Requires exact confirmation only after displaying the prepared target.
+- Leaves the execution gate closed on cancellation or mismatch.
 - Opens the internal prepared-execution gate only around execution.
 - Supports safe cancellation and prints structured evidence.
 
 ## Trust boundaries
 
 The CLI is not trusted to choose arbitrary coordinates or relax thresholds. Candidate coordinates, confirmation text, token state, and validation parameters remain inside the provider process. The bridge is the only layer allowed to publish the ROS navigation goal, while ROS `move_base` remains the only expected `/cmd_vel` publisher.
-

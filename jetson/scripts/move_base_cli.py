@@ -249,7 +249,7 @@ def run_workflow(
     valid_ids = {int(option["option_id"]) for option in options}
     while True:
         selection = normalize_terminal_input(
-            read_input("请输入导航点编号并执行，或输入 q 取消：")
+            read_input("请输入导航点编号，或输入 q 取消：")
         )
         if selection.lower() == "q":
             write("已取消，小车不会移动。")
@@ -272,7 +272,19 @@ def run_workflow(
         write("无运动检查完成，未发送导航目标。")
         return 0
 
-    write("编号已确认，正在进行第三次安全校验并等待导航结果...")
+    confirmation = normalize_terminal_input(read_input(
+        "目标已展示。输入“{}”继续，或输入 q 取消：".format(
+            CONFIRMATION_PHRASE
+        )
+    ))
+    if confirmation.lower() == "q":
+        write("已取消，执行门保持关闭，小车不会移动。")
+        return 0
+    if confirmation != CONFIRMATION_PHRASE:
+        write("确认内容不匹配，执行门保持关闭，小车不会移动。")
+        return 6
+
+    write("人工确认通过，正在进行第三次安全校验并等待导航结果...")
     execution_started = False
     try:
         with prepared_execution_gate():

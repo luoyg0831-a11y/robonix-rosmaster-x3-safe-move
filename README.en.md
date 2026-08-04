@@ -1,43 +1,20 @@
 # Robonix x ROSMASTER X3 Safe Short Move
 
-This repository summarizes a ROS1 safety layer for short-distance navigation on a Yahboom ROSMASTER X3. From the Jetson `robonix` environment, the `move_base` command discovers up to five server-generated safe poses, accepts a numbered selection, revalidates it, publishes one ROS navigation goal, and returns correlated motion evidence.
+Version `0.2.0-candidate.1` is a Catalog-structured ROS1 primitive candidate for
+guarded short-distance navigation on the Yahboom ROSMASTER X3. Its Catalog name
+is `robonix.primitive.yahboom.rosmaster_x3.safe_move`.
 
-> Status: `0.1.0-local-preview`. This is a curated Windows snapshot, not the Jetson production baseline. The 0.08 m candidate passed local syntax checks and offline unit tests, but has not completed Jetson deployment, real-ROS no-motion regression, or final hardware acceptance.
+The server generates at most five options within 0.08 m. After selection and a
+second validation, the CLI displays the prepared target and requires the exact
+phrase `确认执行`. Cancellation or any mismatch leaves the execution gate closed.
+The package never publishes `/cmd_vel` directly, caps both displacement watchdog
+arguments at 0.10 m, and exposes only eight guarded capabilities.
 
-## Safety properties
+Jetson Python 3.10 syntax, all four offline suites, and an isolated
+`rbnx validate/build/validate` sequence passed. The real-ROS no-goal dry-run is
+incomplete because fresh AMCL returned `amcl_unavailable`; the guard observed no
+goal and no nonzero velocity, and no hardware movement was performed.
 
-- Never publishes raw `/cmd_vel`.
-- Does not accept arbitrary goal coordinates from the caller.
-- Revalidates the selected pose before preparation and again before publishing.
-- Uses single-use tokens, atomic claiming, replay prevention, and bounded execution.
-- Does not retry an indeterminate publish with the same token.
-- Correlates move_base state, velocity, base feedback, AMCL, odometry, and final idle state.
-- Keeps legacy `send_nav_goal` and `go_to_waypoint` contracts out of the public manifest.
-
-## Offline checks
-
-```bash
-python -m py_compile \
-  jetson/main.py \
-  jetson/x3_bridge.py \
-  jetson/scripts/move_base_cli.py \
-  jetson/stage1_unit_test.py \
-  jetson/stage2_unit_test.py \
-  jetson/x3_bridge_navigation_unit_test.py \
-  jetson/tests/move_base_cli_unit_test.py
-python jetson/stage1_unit_test.py
-python jetson/stage2_unit_test.py
-python jetson/x3_bridge_navigation_unit_test.py
-python jetson/tests/move_base_cli_unit_test.py
-```
-
-These checks use fake ROS/Robonix modules and do not constitute hardware acceptance.
-`ci/offline-tests.yml` contains the equivalent workflow template. It is not under `.github/workflows/`, so GitHub Actions does not run it automatically.
-
-## Upstream compatibility
-
-This snapshot targets an earlier Robonix Python API with Ubuntu 18.04, ROS1 Melodic, rosbridge, and ROS `move_base`. The current [syswonder/robonix](https://github.com/syswonder/robonix) `dev` branch still uses `package_manifest.yaml`, but its Python API, lifecycle, and capability contracts have evolved and ROS2 is the primary integration path. See [upstream alignment](docs/upstream-alignment.md) and the [integration proposal](docs/upstream-issue-proposal.md).
-
-## License
-
-The historical package manifest declares the original project code as Apache-2.0. Robonix, ROS, Yahboom sources, generated code, and other third-party components remain under their respective licenses.
+See [validation evidence](evidence/validation-2026-08-04.md), the
+[deployment map](docs/deployment-map.md), and the
+[Catalog submission notes](docs/catalog-submission.md).

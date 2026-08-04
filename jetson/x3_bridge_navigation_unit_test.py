@@ -197,6 +197,10 @@ def send(bridge, **kwargs):
         acceptance_timeout=kwargs.get("acceptance_timeout", 0.02),
         result_timeout=kwargs.get("result_timeout", 0.02),
         monitor_ready_timeout=0.02,
+        max_odom_path_m=kwargs.get("max_odom_path_m", 0.10),
+        max_amcl_displacement_m=kwargs.get(
+            "max_amcl_displacement_m", 0.10
+        ),
         cancel_timeout=0.02,
     )
 
@@ -301,6 +305,21 @@ def test_concurrent_send_is_single_publish():
     assert results[0]["navigation_outcome"] == "result_timeout_cancelled"
 
 
+def test_distance_limits_cannot_be_relaxed():
+    for keyword in (
+        "max_odom_path_m",
+        "max_amcl_displacement_m",
+    ):
+        bridge = module.X3Bridge()
+        try:
+            send(bridge, **{keyword: 0.100001})
+        except ValueError as exc:
+            assert "watchdog limit is out of range" in str(exc)
+        else:
+            raise AssertionError(f"{keyword} accepted a value above 0.10 m")
+        assert not bridge.ros.published
+
+
 def run():
     test_success_and_persistent_publisher()
     test_terminal_failure()
@@ -308,6 +327,7 @@ def run():
     test_distance_watchdog_cancels_correlated_goal()
     test_acceptance_and_result_timeouts()
     test_concurrent_send_is_single_publish()
+    test_distance_limits_cannot_be_relaxed()
     print("x3_bridge_navigation_unit_test: PASS")
 
 

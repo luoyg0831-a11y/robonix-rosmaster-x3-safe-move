@@ -7,7 +7,8 @@
 3. Preview does not create a navigation goal.
 4. Preparation revalidates localization, target cost, and planner reachability.
 5. Prepared tokens expire, are claimed atomically, and cannot be replayed.
-6. Execution requires an independent gate and a third validation.
+6. The CLI displays the prepared target and requires exact operator confirmation
+   before it can enter the independent execution gate.
 7. At most one navigation goal publish attempt is made for a claimed token.
 8. An unknown publish outcome is returned as unknown and is not retried.
 9. Success requires correlated `SUCCEEDED`, motion evidence, and final idle state.
@@ -19,6 +20,7 @@
 |---|---|---|
 | Preview | Generate 1-5 bounded candidates and inspect cost/path | None |
 | Prepare | Revalidate selected candidate and issue token | None |
+| Confirm | Display target; exact phrase continues, all other input stays closed | None |
 | Execute | Claim token, recheck current state, publish once, observe result | Possible |
 
 ## Current physical constraints
@@ -32,5 +34,7 @@ These values must not be relaxed without a new safety review and hardware author
 
 ## Emergency behavior
 
-The field environment has a software hard-estop script and a physical power stop. The hard-estop terminates `move_base`, so the navigation stack must be fully restarted afterward. Host-specific command paths are intentionally omitted from this public snapshot and will be documented after the Jetson production inventory is sanitized.
-
+The field environment has a software hard-estop script and a physical power
+stop. The hard-estop terminates `move_base`, so the navigation stack must be
+fully restarted afterward. Host-specific emergency commands remain outside the
+public snapshot.

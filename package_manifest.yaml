@@ -1,9 +1,5 @@
 manifestVersion: 1
 
-build: bash scripts/build.sh
-
-start: bash scripts/start.sh
-
 package:
   name: robonix.primitive.yahboom.rosmaster_x3.safe_move
   version: 0.2.0-candidate.1
@@ -13,22 +9,25 @@ package:
     - luoyg0831 <luoyg0831@gmail.com>
   license: Apache-2.0
 
+build: RBNX_PACKAGE_ROOT=jetson bash jetson/scripts/build.sh
+start: RBNX_PACKAGE_ROOT=jetson bash jetson/scripts/start.sh
+
 capabilities:
   - name: robonix/primitive/rosmaster_x3_bridge/get_status
-    path: capabilities/primitive/rosmaster_x3_bridge/get_status.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/get_status.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/check_nav_ready
-    path: capabilities/primitive/rosmaster_x3_bridge/check_nav_ready.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/check_nav_ready.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/preview_safe_waypoint
-    path: capabilities/primitive/rosmaster_x3_bridge/preview_safe_waypoint.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/preview_safe_waypoint.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/prepare_safe_navigation
-    path: capabilities/primitive/rosmaster_x3_bridge/prepare_safe_navigation.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/prepare_safe_navigation.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/preview_move_options
-    path: capabilities/primitive/rosmaster_x3_bridge/preview_move_options.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/preview_move_options.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/prepare_selected_move
-    path: capabilities/primitive/rosmaster_x3_bridge/prepare_selected_move.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/prepare_selected_move.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/execute_prepared_navigation
-    path: capabilities/primitive/rosmaster_x3_bridge/execute_prepared_navigation.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/execute_prepared_navigation.v1.toml
   - name: robonix/primitive/rosmaster_x3_bridge/cancel_nav_goal
-    path: capabilities/primitive/rosmaster_x3_bridge/cancel_nav_goal.v1.toml
+    path: jetson/capabilities/primitive/rosmaster_x3_bridge/cancel_nav_goal.v1.toml
 
 depends: []

@@ -30,9 +30,9 @@ class FakeApi:
                 {
                     "option_id": 1,
                     "direction_label": "前方",
-                    "x": 0.09,
+                    "x": 0.08,
                     "y": 0.0,
-                    "radius_m": 0.09,
+                    "radius_m": 0.08,
                     "window_max_cost": 0,
                     "path_pose_count": 6,
                 },
@@ -40,8 +40,8 @@ class FakeApi:
                     "option_id": 2,
                     "direction_label": "左侧",
                     "x": 0.0,
-                    "y": 0.09,
-                    "radius_m": 0.09,
+                    "y": 0.08,
+                    "radius_m": 0.08,
                     "window_max_cost": 0,
                     "path_pose_count": 7,
                 },
@@ -56,11 +56,11 @@ class FakeApi:
             "confirmation_text": "internal-confirmation",
             "target": {
                 "x": 0.0,
-                "y": 0.09,
-                "distance_from_current_m": 0.09,
+                "y": 0.08,
+                "distance_from_current_m": 0.08,
             },
             "costmap": {
-                "distance_m": 0.09,
+                "distance_m": 0.08,
                 "stats": {"goal_cost": 0, "max_cost": 0},
             },
             "plan": {"plan_pose_count": 7},
@@ -115,6 +115,7 @@ def run_success_test():
             read_input=reader([
                 "9",
                 "\x1b[200~２\x1b[201~",
+                "\x1b[200~确认执行\x1b[201~",
             ]),
             write=output.append,
         )
@@ -123,7 +124,8 @@ def run_success_test():
         assert api.prepare_calls == [("session-1", 2)]
         assert api.execute_calls == [("token-1", "internal-confirmation")]
         assert "X3_ALLOW_PREPARED_NAV_EXECUTION" not in os.environ
-        assert any("距离=0.09m" in line for line in output)
+        assert any("距离=0.08m" in line for line in output)
+        assert any("人工确认通过" in line for line in output)
         assert any("SUCCEEDED" in line for line in output)
     finally:
         if old_gate is None:
@@ -133,30 +135,69 @@ def run_success_test():
 
 
 def run_cancel_tests():
-    api = FakeApi()
-    assert cli.run_workflow(
-        api,
-        read_input=reader(["q"]),
-        write=lambda _line: None,
-    ) == 0
-    assert not api.prepare_calls
-    assert not api.execute_calls
+    original_gate = cli.prepared_execution_gate
+    old_gate = os.environ.get("X3_ALLOW_PREPARED_NAV_EXECUTION")
+    os.environ.pop("X3_ALLOW_PREPARED_NAV_EXECUTION", None)
 
-    api = FakeApi()
-    assert cli.run_workflow(
-        api,
-        read_input=reader(["9", "q"]),
-        write=lambda _line: None,
-    ) == 0
-    assert not api.prepare_calls
-    assert not api.execute_calls
+    def forbidden_gate():
+        raise AssertionError("execution gate opened after cancellation")
+
+    cli.prepared_execution_gate = forbidden_gate
+    try:
+        api = FakeApi()
+        assert cli.run_workflow(
+            api,
+            read_input=reader(["q"]),
+            write=lambda _line: None,
+        ) == 0
+        assert not api.prepare_calls
+        assert not api.execute_calls
+
+        api = FakeApi()
+        output = []
+        assert cli.run_workflow(
+            api,
+            read_input=reader(["1", "q"]),
+            write=output.append,
+        ) == 0
+        assert api.prepare_calls == [("session-1", 1)]
+        assert not api.execute_calls
+        assert "X3_ALLOW_PREPARED_NAV_EXECUTION" not in os.environ
+        assert any("执行门保持关闭" in line for line in output)
+
+        api = FakeApi()
+        output = []
+        assert cli.run_workflow(
+            api,
+            read_input=reader(["1", "确认"]),
+            write=output.append,
+        ) == 6
+        assert api.prepare_calls == [("session-1", 1)]
+        assert not api.execute_calls
+        assert "X3_ALLOW_PREPARED_NAV_EXECUTION" not in os.environ
+        assert any("确认内容不匹配" in line for line in output)
+
+        api = FakeApi()
+        assert cli.run_workflow(
+            api,
+            read_input=reader(["9", "q"]),
+            write=lambda _line: None,
+        ) == 0
+        assert not api.prepare_calls
+        assert not api.execute_calls
+    finally:
+        cli.prepared_execution_gate = original_gate
+        if old_gate is None:
+            os.environ.pop("X3_ALLOW_PREPARED_NAV_EXECUTION", None)
+        else:
+            os.environ["X3_ALLOW_PREPARED_NAV_EXECUTION"] = old_gate
 
 
 def run_failure_test():
     api = FakeApi(execute_ok=False)
     code = cli.run_workflow(
         api,
-        read_input=reader(["1"]),
+        read_input=reader(["1", cli.CONFIRMATION_PHRASE]),
         write=lambda _line: None,
     )
     assert code == 5
@@ -202,7 +243,7 @@ def run_watchdog_estop_test():
     output = []
     code = cli.run_workflow(
         api,
-        read_input=reader(["1"]),
+        read_input=reader(["1", cli.CONFIRMATION_PHRASE]),
         write=output.append,
     )
     assert code == 5
