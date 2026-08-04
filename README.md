@@ -46,6 +46,13 @@
 详见[验证证据](evidence/validation-2026-08-04.md)、[远端盘点](evidence/remote-inventory-2026-08-04.md)
 和[部署映射](docs/deployment-map.md)。
 
+## 演示视频
+
+[audio-test01.mp4](https://github.com/luoyg0831-a11y/robonix-rosmaster-x3-safe-move/releases/download/v0.2.0-candidate.1/audio-test01.mp4)
+作为 `v0.2.0-candidate.1` 预发布版本的 Release 资产提供。文件 SHA256 为
+`c2a8dc1c3b187205f5efb5392562f0e1d41d5c58575656ca2cd10c18d8494e88`。
+该视频用于项目演示，不替代 0.08 m 候选版本的生产部署与实车验收。
+
 ## 离线检查
 
 ```bash

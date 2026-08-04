@@ -18,3 +18,11 @@ goal and no nonzero velocity, and no hardware movement was performed.
 See [validation evidence](evidence/validation-2026-08-04.md), the
 [deployment map](docs/deployment-map.md), and the
 [Catalog submission notes](docs/catalog-submission.md).
+
+## Demo video
+
+[audio-test01.mp4](https://github.com/luoyg0831-a11y/robonix-rosmaster-x3-safe-move/releases/download/v0.2.0-candidate.1/audio-test01.mp4)
+is attached to the `v0.2.0-candidate.1` prerelease. Its SHA256 is
+`c2a8dc1c3b187205f5efb5392562f0e1d41d5c58575656ca2cd10c18d8494e88`.
+The video demonstrates the project but does not replace production deployment
+and hardware acceptance of the 0.08 m candidate.
