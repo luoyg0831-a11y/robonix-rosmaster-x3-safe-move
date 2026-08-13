@@ -6,7 +6,7 @@
   checksum checks.
 - Expanded `config.spec` with connection failure conditions and examples.
 - Published the candidate on the GitHub default branch, passed the repository
-  offline workflow, and submitted upstream Catalog PR #21; Catalog CI passes.
+  offline workflow, and merged upstream Catalog PR #21; Catalog CI passed.
 - Published the project demo as the `audio-test01.mp4` prerelease asset and
   recorded its SHA256 in the public documentation.
 
