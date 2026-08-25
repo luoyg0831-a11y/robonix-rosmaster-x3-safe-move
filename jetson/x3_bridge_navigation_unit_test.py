@@ -217,6 +217,10 @@ def test_success_and_persistent_publisher():
     assert second["publisher_reused"] is True
     assert first["nonzero_cmd_vel_messages"] == 1
     assert math.isclose(first["amcl_displacement_m"], 0.08)
+    assert math.isclose(first["odom_stop_margin_m"], 0.02)
+    assert math.isclose(first["amcl_stop_margin_m"], 0.02)
+    assert math.isclose(first["odom_watchdog_trigger_m"], 0.08)
+    assert math.isclose(first["amcl_watchdog_trigger_m"], 0.08)
     assert bridge.ros.advertise_counts["/move_base_simple/goal"] == 1
     assert [name for name, _ in bridge.ros.published] == [
         "/move_base_simple/goal",
@@ -312,12 +316,25 @@ def test_distance_limits_cannot_be_relaxed():
     ):
         bridge = module.X3Bridge()
         try:
-            send(bridge, **{keyword: 0.100001})
+            send(bridge, **{keyword: 1.000001})
         except ValueError as exc:
             assert "watchdog limit is out of range" in str(exc)
         else:
-            raise AssertionError(f"{keyword} accepted a value above 0.10 m")
+            raise AssertionError(f"{keyword} accepted a value above 1.00 m")
         assert not bridge.ros.published
+
+
+def test_scaled_one_metre_stop_margin():
+    bridge = module.X3Bridge()
+    result = send(
+        bridge,
+        max_odom_path_m=1.00,
+        max_amcl_displacement_m=1.00,
+    )
+    assert math.isclose(result["odom_stop_margin_m"], 0.10)
+    assert math.isclose(result["amcl_stop_margin_m"], 0.10)
+    assert math.isclose(result["odom_watchdog_trigger_m"], 0.90)
+    assert math.isclose(result["amcl_watchdog_trigger_m"], 0.90)
 
 
 def run():
@@ -328,6 +345,7 @@ def run():
     test_acceptance_and_result_timeouts()
     test_concurrent_send_is_single_publish()
     test_distance_limits_cannot_be_relaxed()
+    test_scaled_one_metre_stop_margin()
     print("x3_bridge_navigation_unit_test: PASS")
 
 

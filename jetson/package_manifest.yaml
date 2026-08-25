@@ -6,8 +6,8 @@ start: bash scripts/start.sh
 
 package:
   name: robonix.primitive.yahboom.rosmaster_x3.safe_move
-  version: 0.2.0-candidate.1
-  description: Guarded ROS1 short-distance navigation for Yahboom ROSMASTER X3.
+  version: 0.3.0-candidate.1
+  description: Guarded ROS1 navigation up to 0.80 m for Yahboom ROSMASTER X3.
   tags: [primitive, chassis, yahboom, rosmaster_x3, ros1, navigation, safety]
   maintainers:
     - luoyg0831 <luoyg0831@gmail.com>

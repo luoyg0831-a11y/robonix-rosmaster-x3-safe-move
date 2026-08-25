@@ -122,7 +122,7 @@ def prepared_execution_gate():
     previous = {name: os.environ.get(name) for name in names}
     os.environ["X3_ALLOW_PREPARED_NAV_EXECUTION"] = "1"
     os.environ["X3_PREPARED_NAV_EXECUTION_BUDGET_SEC"] = "20"
-    os.environ["X3_PREPARED_NAV_RESULT_TIMEOUT_SEC"] = "15"
+    os.environ["X3_PREPARED_NAV_RESULT_TIMEOUT_SEC"] = "45"
     os.environ.pop("X3_ALLOW_NAV_GOAL", None)
     os.environ.pop("X3_MAX_NAV_GOAL_DISTANCE_M", None)
     try:
@@ -318,7 +318,7 @@ def run_workflow(
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
-        description="ROSMASTER X3 安全短距离导航"
+        description="ROSMASTER X3 安全距离导航"
     )
     parser.add_argument(
         "--max-options",

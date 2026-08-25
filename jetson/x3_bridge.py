@@ -956,14 +956,34 @@ class X3Bridge:
             raise ValueError('monitor readiness timeout is out of range')
         if not 0.05 <= max_linear_mps <= 0.30:
             raise ValueError('linear watchdog limit is out of range')
-        if not 0.20 <= max_angular_rps <= 1.20:
+        if not 0.01 <= max_angular_rps <= 1.20:
             raise ValueError('angular watchdog limit is out of range')
-        if not 0.01 <= max_odom_path_m <= 0.10:
+        if not 0.01 <= max_odom_path_m <= 1.00:
             raise ValueError('odometry watchdog limit is out of range')
-        if not 0.01 <= max_amcl_displacement_m <= 0.10:
+        if not 0.01 <= max_amcl_displacement_m <= 1.00:
             raise ValueError('AMCL watchdog limit is out of range')
         if not 0.01 <= cancel_timeout <= 10.0:
             raise ValueError('cancel timeout is out of range')
+
+        # Preserve the existing 0.02 m margin for short moves and scale it up
+        # to 0.10 m for the 1.00 m public cap.  This leaves room for command
+        # transport, correlated cancellation, and physical stopping.
+        odom_stop_margin_m = min(
+            0.10,
+            max(0.02, max_odom_path_m * 0.10),
+        )
+        amcl_stop_margin_m = min(
+            0.10,
+            max(0.02, max_amcl_displacement_m * 0.10),
+        )
+        odom_watchdog_trigger_m = max(
+            0.005,
+            max_odom_path_m - odom_stop_margin_m,
+        )
+        amcl_watchdog_trigger_m = max(
+            0.005,
+            max_amcl_displacement_m - amcl_stop_margin_m,
+        )
 
         yaw_rad = math.radians(yaw_deg)
         orientation = {
@@ -1026,6 +1046,10 @@ class X3Bridge:
             'max_angular_limit_rps': max_angular_rps,
             'max_odom_path_m': max_odom_path_m,
             'max_amcl_displacement_m': max_amcl_displacement_m,
+            'odom_stop_margin_m': odom_stop_margin_m,
+            'amcl_stop_margin_m': amcl_stop_margin_m,
+            'odom_watchdog_trigger_m': odom_watchdog_trigger_m,
+            'amcl_watchdog_trigger_m': amcl_watchdog_trigger_m,
             'observer_cleanup_errors': [],
         }
 
@@ -1185,7 +1209,7 @@ class X3Bridge:
                 )
                 if (
                     state['watchdog_reason'] is None
-                    and displacement > max_amcl_displacement_m
+                    and displacement > amcl_watchdog_trigger_m
                 ):
                     state['watchdog_reason'] = (
                         'amcl_displacement_limit_exceeded'
@@ -1223,7 +1247,7 @@ class X3Bridge:
                 state['odom_messages'] += 1
                 if (
                     state['watchdog_reason'] is None
-                    and state['odom_path_length_m'] > max_odom_path_m
+                    and state['odom_path_length_m'] > odom_watchdog_trigger_m
                 ):
                     state['watchdog_reason'] = 'odom_path_limit_exceeded'
                     watchdog.set()

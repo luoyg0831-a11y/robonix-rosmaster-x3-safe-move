@@ -2,50 +2,47 @@
 
 ## Public repository to Jetson
 
-| Public path | Jetson production path or role |
+| Public path | Current Jetson path or role |
 |---|---|
 | `package_manifest.yaml` | Catalog-facing root manifest |
-| `jetson/package_manifest.yaml` | `/home/jetson/rosmaster_x3_deploy/primitives/rosmaster_x3_bridge/package_manifest.yaml` |
-| `jetson/main.py` | `.../rosmaster_x3_bridge/rosmaster_x3_bridge/main.py` |
-| `jetson/x3_bridge.py` | `/home/jetson/x3_rosbridge_adapter/scripts/x3_bridge.py` |
-| `jetson/scripts/move_base_cli.py` | `/home/jetson/rosmaster_x3_deploy/scripts/move_base_cli.py` |
-| `jetson/scripts/move_base` | `/home/jetson/rosmaster_x3_deploy/scripts/move_base` |
+| `jetson/package_manifest.yaml` | Curated release manifest; the existing local deployment still carries its legacy package identity |
+| `jetson/main.py` | `rosmaster_x3_deploy/primitives/rosmaster_x3_bridge/rosmaster_x3_bridge/main.py` |
+| `jetson/x3_bridge.py` | `x3_rosbridge_adapter/scripts/x3_bridge.py` |
+| `jetson/scripts/move_base_cli.py` | `rosmaster_x3_deploy/scripts/move_base_cli.py` |
+| `jetson/scripts/move_base` | `rosmaster_x3_deploy/scripts/move_base` |
 
 The source snapshot keeps `main.py` at `jetson/main.py` for offline tests. The
-production package imports it from the nested `rosmaster_x3_bridge/` module.
+deployed package imports it from the nested `rosmaster_x3_bridge/` module.
 `scripts/start.sh` supports both layouts without copying or changing production.
+
+The three current runtime source files were copied over SSH on 2026-08-25 and
+match the public files byte for byte:
+
+| File | SHA256 |
+|---|---|
+| `main.py` | `a3c2a5f4b94def0f84b981c8fa1837d99196622717cf576df9603b57cc932e4b` |
+| `x3_bridge.py` | `425baf888847ca3b2e264ed2e3b50c65118a7ba77718931e55ddac8d503927aa` |
+| `move_base_cli.py` | `4f2637d4bac646bf66ba52641e7511831909e42478b5d115798cff70f0997c9d` |
 
 ## Command and environment
 
-Inside the `robonix` conda environment:
-
-```text
-/home/jetson/miniforge3/envs/robonix/bin/move_base
-  -> /home/jetson/rosmaster_x3_deploy/scripts/move_base
-```
-
-The wrapper activates the `robonix` Python 3.10 environment, sources Cargo,
-sets loopback ROS master/IP values, and builds `PYTHONPATH` from the Robonix API,
-external adapter, package, MCP types, and generated protobuf modules. It unsets
-all legacy and prepared execution gate variables before starting the CLI.
+Inside the `robonix` conda environment, the installed `move_base` command calls
+the deployment wrapper and then `move_base_cli.py`. The wrapper sources the ROS
+and Robonix Python paths and removes legacy execution-gate variables before
+starting the CLI.
 
 ## Build and codegen
 
-- `rbnx`: `/home/jetson/.cargo/bin/rbnx`, version 0.1.0.
-- Robonix source: `/home/jetson/robonix`, clean `dev` at
-  `6bf549f954fb8bc21997e819741f51a34bb51ec9` during inventory.
-- Codegen command: `rbnx codegen -p <package> --mcp --clean` via
-  `jetson/scripts/build.sh`.
-- Codegen requires conda Python to precede system Python in `PATH`, because the
-  conda environment supplies `grpc_tools`.
+- `jetson/scripts/build.sh` runs Robonix MCP code generation.
 - Generated `rbnx-build/` content is reproducible build output and is not
   committed.
+- Backups, logs, bytecode, raw maps, and device credentials are excluded from
+  the public snapshot.
 
-## ROS configuration source
+## ROS configuration boundary
 
-The ROS1 workspace root is `/home/jetson/yahboomcar_ws`. Navigation starts from
-`yahboomcar_nav/launch/laser_bringup.launch` and
-`yahboomcar_nav/launch/yahboomcar_navigation.launch`; the latter includes AMCL,
-map server, move_base, and rosbridge. Shell startup sets `ROBOT_TYPE=X3` and
-`RPLIDAR_TYPE=a1`. Vendor source/config files are not copied into this public
-repository because their redistribution license remains unclear.
+The inspected ROS1 source workspace is the X3-specific Yahboom workspace. The
+navigation stack uses the laser, AMCL, map server, move_base, rosbridge, base
+driver, and robot_localization files summarized in
+[Recorded ROS Configuration](ros-configuration.md). Vendor files are not copied
+into this repository; only parameter summaries and SHA256 values are published.

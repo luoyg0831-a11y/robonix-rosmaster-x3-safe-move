@@ -265,7 +265,7 @@ def run():
     assert FAKE.make_plan_call_count == result["candidate_stats"][
         "plan_checked"
     ]
-    assert result["candidate_stats"]["plan_check_limit_reached"] is True
+    assert result["candidate_stats"]["plan_check_limit_reached"] is False
     assert_safety(result)
     FAKE.plan_fail = False
     FAKE.make_plan_call_count = 0
@@ -293,8 +293,11 @@ def run():
     os.environ.pop("X3_MOVE_OPTIONS_SESSION_TTL_SEC")
 
     default_config = provider._move_options_config()
-    assert default_config["min_radius_m"] == 0.08
-    assert default_config["max_radius_m"] == 0.08
+    assert default_config["min_radius_m"] == 0.10
+    assert default_config["max_radius_m"] == 0.80
+    assert default_config["radius_step_m"] == 0.10
+    assert default_config["max_plan_checks"] == 45
+    assert default_config["preview_time_budget_sec"] == 45.0
 
     bounded_environment = {
         "X3_MOVE_OPTIONS_MIN_RADIUS_M": "0.01",
@@ -308,12 +311,12 @@ def run():
     os.environ.update(bounded_environment)
     config = provider._move_options_config()
     assert config["min_radius_m"] == 0.05
-    assert config["max_radius_m"] == 0.08
+    assert config["max_radius_m"] == 0.50
     assert config["radius_step_m"] == 0.01
     assert config["angle_step_deg"] == 15
-    assert config["max_plan_checks"] == 24
+    assert config["max_plan_checks"] == 45
     assert config["plan_timeout_sec"] == 5.0
-    assert config["preview_time_budget_sec"] == 30.0
+    assert config["preview_time_budget_sec"] == 60.0
     for name in bounded_environment:
         os.environ.pop(name)
 
@@ -404,19 +407,24 @@ def run():
         "plan_checked"
     ]
     assert result["search"]["min_radius_m"] >= 0.05
-    assert result["search"]["max_radius_m"] <= 0.08
+    assert result["search"]["max_radius_m"] <= 0.80
     assert result["search"]["radius_step_m"] >= 0.01
     assert result["search"]["angle_step_deg"] >= 15
     assert result["search"]["plan_timeout_sec"] <= 3.0
     assert [item["option_id"] for item in result["options"]] == list(
         range(1, result["option_count"] + 1)
     )
+    assert result["candidate_stats"]["farthest_safe_radius_m"] == 0.80
+    assert {
+        option["radius_m"] for option in result["options"]
+    } == {0.80}
     for option in result["options"]:
         assert option["unknown_count"] == 0
         assert option["lethal_count"] == 0
         assert option["high_cost_count"] == 0
         assert option["make_plan_ok"] is True
         assert option["direction_description_reliable"] is False
+        assert -30.0 <= option["relative_angle_deg"] <= 30.0
     for index, option in enumerate(result["options"]):
         for other in result["options"][index + 1:]:
             assert provider._circular_angle_distance_deg(
@@ -547,7 +555,7 @@ def run():
     assert strict_false["token_issued"] is False
 
     too_far = data(provider.prepare_safe_navigation(
-        prepare_request(x=0.80)
+        prepare_request(x=0.94)
     ))
     assert too_far["token_issued"] is False
 

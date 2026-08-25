@@ -48,6 +48,15 @@ def numeric_assignment(tree: ast.AST, name: str) -> float:
     raise AssertionError("unreachable")
 
 
+def numeric_expression(tree: ast.AST, node: ast.AST) -> float:
+    if isinstance(node, ast.Name):
+        return numeric_assignment(tree, node.id)
+    value = ast.literal_eval(node)
+    if not isinstance(value, (int, float)):
+        fail("watchdog argument is not numeric")
+    return float(value)
+
+
 def provider_contracts(tree: ast.AST) -> set[str]:
     contracts = set()
     for node in ast.walk(tree):
@@ -150,8 +159,8 @@ def main() -> None:
     radius = numeric_assignment(
         main_tree, "_MOVE_OPTION_OPERATIONAL_MAX_RADIUS_M"
     )
-    if not math.isclose(radius, 0.08, abs_tol=1e-12):
-        fail(f"candidate radius is {radius}, expected exactly 0.08 m")
+    if not math.isclose(radius, 0.80, abs_tol=1e-12):
+        fail(f"candidate radius is {radius}, expected exactly 0.80 m")
 
     manifest_text = MANIFEST_PATH.read_text(encoding="utf-8")
     manifest_capabilities = {
@@ -184,21 +193,21 @@ def main() -> None:
         if call.func.attr != "send_navigation_goal_pose":
             continue
         limits = {
-            keyword.arg: ast.literal_eval(keyword.value)
+            keyword.arg: numeric_expression(main_tree, keyword.value)
             for keyword in call.keywords
             if keyword.arg in {"max_odom_path_m", "max_amcl_displacement_m"}
         }
         if limits != {
-            "max_odom_path_m": 0.10,
-            "max_amcl_displacement_m": 0.10,
+            "max_odom_path_m": 1.00,
+            "max_amcl_displacement_m": 1.00,
         }:
             fail(f"prepared execution watchdog arguments changed: {limits}")
 
     audit_confirmation_gate(cli_tree)
 
-    print("candidate_radius_m=0.08")
-    print("odom_path_limit_m=0.10")
-    print("amcl_displacement_limit_m=0.10")
+    print("candidate_radius_m=0.80")
+    print("odom_path_limit_m=1.00")
+    print("amcl_displacement_limit_m=1.00")
     print("public_capability_count=8")
     print("direct_cmd_vel_publishers=0")
     print("legacy_navigation_tools_exposed=0")

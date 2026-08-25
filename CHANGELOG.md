@@ -2,13 +2,22 @@
 
 ## Unreleased
 
-- Restored the repository workflow used by the offline, metadata, safety, and
-  checksum checks.
-- Expanded `config.spec` with connection failure conditions and examples.
-- Published the candidate on the GitHub default branch, passed the repository
-  offline workflow, and merged upstream Catalog PR #21; Catalog CI passed.
-- Published the project demo as the `audio-test01.mp4` prerelease asset and
-  recorded its SHA256 in the public documentation.
+## 0.3.0-candidate.1 - 2026-08-25
+
+- Synchronized the public provider, rosbridge adapter, and CLI with the current
+  Jetson deployment and recorded byte-for-byte SHA256 matches.
+- Changed option discovery to search 0.80 m down to 0.10 m, farthest first,
+  limited to the forward ±30° sector, returning only the farthest safe radius.
+- Raised the bounded odometry and AMCL watchdog inputs to 1.00 m while adding a
+  scaled stop margin that triggers cancellation at 0.90 m for the 1.00 m cap.
+- Added a 0.93 m prepare/execute revalidation ceiling for bounded AMCL jitter;
+  candidate generation remains capped at 0.80 m.
+- Extended the result timeout to 45 seconds and preserved all operator
+  confirmation and fail-closed cancellation tests.
+- Updated recorded ROS configuration hashes and current validation status
+  without redistributing vendor packages, raw maps, or field logs.
+- Replaced the demo with the new 65,499,360-byte release asset and recorded its
+  SHA256.
 
 ## 0.2.0-candidate.1 - 2026-08-04
 

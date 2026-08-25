@@ -65,9 +65,16 @@ _MOVE_OPTION_SESSION_LIMIT = 16
 _AMCL_MAX_MESSAGE_AGE_SEC = 2.0
 _AMCL_MAX_POSITION_VARIANCE_M2 = 0.01
 _AMCL_MAX_YAW_VARIANCE_RAD2 = 0.10
-# Preserve 0.05 m of motion evidence with the 0.03 m goal tolerance,
-# while leaving convergence margin inside the 0.10 m path watchdog.
-_MOVE_OPTION_OPERATIONAL_MAX_RADIUS_M = 0.08
+# Search from 0.80 m back toward 0.10 m.  The separate 1.00 m path watchdog
+# leaves 0.20 m for controller curvature, cancellation, and physical stopping.
+_MOVE_OPTION_OPERATIONAL_MIN_RADIUS_M = 0.10
+_MOVE_OPTION_OPERATIONAL_MAX_RADIUS_M = 0.80
+# AMCL can move a few millimetres between preview and the second/third
+# validation even while the robot is stationary.  Keep candidate generation
+# capped at 0.80 m, but allow the existing 0.03 m pose-change gate to absorb
+# that localization jitter during revalidation.
+_PREPARE_DISTANCE_VALIDATION_MAX_M = 0.93
+_NAVIGATION_HARD_MAX_PATH_M = 1.00
 
 
 def ensure_bridge() -> X3Bridge:
@@ -934,9 +941,9 @@ def prepare_safe_navigation(
 
         max_prepare_distance_m = _bounded_env_float(
             "X3_MAX_PREPARE_DISTANCE_M",
-            default=0.10,
+            default=_PREPARE_DISTANCE_VALIDATION_MAX_M,
             minimum=0.05,
-            maximum=0.10,
+            maximum=_PREPARE_DISTANCE_VALIDATION_MAX_M,
         )
 
         token_ttl_sec = _bounded_env_float(
@@ -1415,9 +1422,9 @@ def _move_options_config() -> dict:
     """Return conservative server-controlled move-option settings."""
     max_prepare_distance_m = _bounded_env_float(
         "X3_MAX_PREPARE_DISTANCE_M",
-        default=0.10,
+        default=_PREPARE_DISTANCE_VALIDATION_MAX_M,
         minimum=0.05,
-        maximum=0.10,
+        maximum=_PREPARE_DISTANCE_VALIDATION_MAX_M,
     )
     hard_max_radius_m = min(
         _MOVE_OPTION_OPERATIONAL_MAX_RADIUS_M,
@@ -1425,7 +1432,10 @@ def _move_options_config() -> dict:
     )
     min_radius_m = _bounded_env_float(
         "X3_MOVE_OPTIONS_MIN_RADIUS_M",
-        default=hard_max_radius_m,
+        default=min(
+            _MOVE_OPTION_OPERATIONAL_MIN_RADIUS_M,
+            hard_max_radius_m,
+        ),
         minimum=0.05,
         maximum=hard_max_radius_m,
     )
@@ -1447,9 +1457,9 @@ def _move_options_config() -> dict:
         "max_radius_m": max_radius_m,
         "radius_step_m": _bounded_env_float(
             "X3_MOVE_OPTIONS_RADIUS_STEP_M",
-            default=0.01,
+            default=0.10,
             minimum=0.01,
-            maximum=0.05,
+            maximum=0.10,
         ),
         "angle_step_deg": _bounded_env_int(
             "X3_MOVE_OPTIONS_ANGLE_STEP_DEG",
@@ -1500,15 +1510,15 @@ def _move_options_config() -> dict:
         ),
         "max_plan_checks": _bounded_env_int(
             "X3_MOVE_OPTIONS_MAX_PLAN_CHECKS",
-            default=16,
+            default=45,
             minimum=5,
-            maximum=24,
+            maximum=45,
         ),
         "preview_time_budget_sec": _bounded_env_float(
             "X3_MOVE_OPTIONS_PREVIEW_TIME_BUDGET_SEC",
-            default=20.0,
+            default=45.0,
             minimum=5.0,
-            maximum=30.0,
+            maximum=60.0,
         ),
         "strict_high_cost": True,
         "max_prepare_distance_m": max_prepare_distance_m,
@@ -2049,18 +2059,26 @@ def preview_move_options(
             payload["message"] = "global costmap is unavailable or invalid"
             return finish_response()
 
+        # Farthest-first ordering is a safety contract: a lower radius is
+        # considered only when no candidate at every larger radius survives
+        # the strict costmap and make_plan checks.
         radii = []
-        radius = float(config["min_radius_m"])
-        while radius <= float(config["max_radius_m"]) + 1e-9:
+        radius = float(config["max_radius_m"])
+        while radius >= float(config["min_radius_m"]) - 1e-9:
             radii.append(round(radius, 6))
-            radius += float(config["radius_step_m"])
+            radius -= float(config["radius_step_m"])
 
         relative_angles_deg = []
         raw_angle = 0
         while raw_angle < 360:
-            relative_angles_deg.append(
-                ((float(raw_angle) + 180.0) % 360.0) - 180.0
-            )
+            relative_angle_deg = (
+                (float(raw_angle) + 180.0) % 360.0
+            ) - 180.0
+            # Short X3 moves are reliable only in the forward sector.  Keep
+            # three or more nearby headings while excluding lateral/rear
+            # options that passed global planning but failed live execution.
+            if -30.0 <= relative_angle_deg <= 30.0:
+                relative_angles_deg.append(relative_angle_deg)
             raw_angle += int(config["angle_step_deg"])
 
         search_parameters = {
@@ -2142,9 +2160,9 @@ def preview_move_options(
 
         costmap_candidates.sort(
             key=lambda candidate: (
-                candidate["costmap_rank_score"],
-                candidate["radius_m"],
+                -candidate["radius_m"],
                 abs(candidate["relative_angle_deg"]),
+                candidate["costmap_rank_score"],
                 candidate["relative_angle_deg"],
                 candidate["target"]["x"],
                 candidate["target"]["y"],
@@ -2156,11 +2174,24 @@ def preview_move_options(
         plan_passed = 0
         plan_check_limit = int(config["max_plan_checks"])
         plan_check_limit_reached = False
+        farthest_safe_radius_m = None
         minimum_separation = float(
             config["min_angle_separation_deg"]
         )
 
         for candidate in costmap_candidates:
+            if (
+                farthest_safe_radius_m is not None
+                and not math.isclose(
+                    candidate["radius_m"],
+                    farthest_safe_radius_m,
+                    abs_tol=1e-9,
+                )
+            ):
+                # At least one fully safe option exists at the current
+                # farthest radius. Never mix nearer points into this list.
+                break
+
             if len(selected) >= effective_max_options:
                 break
 
@@ -2197,6 +2228,8 @@ def preview_move_options(
                 continue
 
             plan_passed += 1
+            if farthest_safe_radius_m is None:
+                farthest_safe_radius_m = candidate["radius_m"]
             target = candidate["target"]
             stats = plan_validation["costmap_stats"]
             plan = plan_validation["plan"]
@@ -2280,6 +2313,7 @@ def preview_move_options(
             "plan_check_limit": plan_check_limit,
             "plan_check_limit_reached": plan_check_limit_reached,
             "selected_after_diversity": len(selected),
+            "farthest_safe_radius_m": farthest_safe_radius_m,
             "failures": failures,
         }
         payload["options"] = copy.deepcopy(selected)
@@ -2374,6 +2408,8 @@ def _prepare_failure_reason(prepare_result: dict) -> str:
 
     if "amcl" in text or "current pose" in text:
         return "amcl_check_failed"
+    if "farther" in text or "distance" in text:
+        return "target_distance_changed"
     if "costmap" in text:
         return "costmap_check_failed"
     if "make_plan" in text or "path" in text:
@@ -2693,9 +2729,9 @@ def _prepared_navigation_result_timeout_sec() -> float:
     """Return the bounded terminal navigation-result wait."""
     return _bounded_env_float(
         "X3_PREPARED_NAV_RESULT_TIMEOUT_SEC",
-        default=15.0,
+        default=45.0,
         minimum=10.0,
-        maximum=30.0,
+        maximum=60.0,
     )
 
 
@@ -2881,7 +2917,7 @@ def _prepared_execution_parameters(token_record: dict) -> dict:
         raise ValueError("frozen goal cost limit is invalid")
     if not 0.0 <= plan_tolerance_m <= 0.10:
         raise ValueError("frozen plan tolerance is invalid")
-    if not 0.05 <= max_prepare_distance_m <= 0.10:
+    if not 0.05 <= max_prepare_distance_m <= 0.93:
         raise ValueError("frozen distance limit is invalid")
     if not 0.5 <= plan_timeout_sec <= 8.0:
         raise ValueError("frozen plan timeout is invalid")
@@ -3475,9 +3511,11 @@ def execute_prepared_navigation(
                 acceptance_timeout=acceptance_timeout_sec,
                 result_timeout=result_timeout_sec,
                 max_linear_mps=0.10,
-                max_angular_rps=0.60,
-                max_odom_path_m=0.10,
-                max_amcl_displacement_m=0.10,
+                # Live forward-sector trials measured bounded DWA corrections
+                # up to 0.257 rad/s; retain a 0.30 rad/s safety gate.
+                max_angular_rps=0.30,
+                max_odom_path_m=_NAVIGATION_HARD_MAX_PATH_M,
+                max_amcl_displacement_m=_NAVIGATION_HARD_MAX_PATH_M,
                 cancel_timeout=4.0,
             )
         except Exception as exc:

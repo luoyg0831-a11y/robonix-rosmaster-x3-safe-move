@@ -20,6 +20,7 @@ class FakeApi:
         self.cancel_calls = 0
         self.hard_estop_calls = 0
         self.execute_ok = execute_ok
+        self.execution_gate_snapshot = None
 
     def preview(self, max_options):
         self.preview_calls.append(max_options)
@@ -68,6 +69,13 @@ class FakeApi:
 
     def execute(self, token, confirmation_text):
         self.execute_calls.append((token, confirmation_text))
+        self.execution_gate_snapshot = {
+            "allow": os.environ.get("X3_ALLOW_PREPARED_NAV_EXECUTION"),
+            "budget": os.environ.get("X3_PREPARED_NAV_EXECUTION_BUDGET_SEC"),
+            "result_timeout": os.environ.get(
+                "X3_PREPARED_NAV_RESULT_TIMEOUT_SEC"
+            ),
+        }
         return {
             "ok": self.execute_ok,
             "reason": (
@@ -123,6 +131,11 @@ def run_success_test():
         assert api.preview_calls == [5]
         assert api.prepare_calls == [("session-1", 2)]
         assert api.execute_calls == [("token-1", "internal-confirmation")]
+        assert api.execution_gate_snapshot == {
+            "allow": "1",
+            "budget": "20",
+            "result_timeout": "45",
+        }
         assert "X3_ALLOW_PREPARED_NAV_EXECUTION" not in os.environ
         assert any("距离=0.08m" in line for line in output)
         assert any("人工确认通过" in line for line in output)

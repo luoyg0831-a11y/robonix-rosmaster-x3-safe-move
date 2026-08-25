@@ -1,9 +1,9 @@
 # Deployment Gap
 
-Completed: full production 0.07 m download and diff, date-stamped verified
-backup, deployment and command mapping, environment/codegen source recovery,
-Jetson Python 3.10 syntax, four offline suites, and isolated
-`rbnx validate/build/validate`.
+Completed: current Jetson provider/bridge/CLI snapshot and SHA256 comparison,
+deployment and command mapping, offline syntax and four test suites, safety and
+public-snapshot audits, prior 0.08 m hardware loop, and 0.90 m no-motion
+preview/prepare validation.
 
 Published package state:
 
@@ -12,15 +12,12 @@ Published package state:
 
 Still open:
 
-- the upstream Package Catalog PR #21 passed Catalog CI and was merged on
-  2026-08-05;
-- production remains on the verified 0.07 m provider;
-- the real ROS no-goal dry-run stopped fail-closed at `amcl_unavailable`;
-- production installation of the 0.08 m candidate is not authorized;
-- no 0.08 m hardware movement or repeated acceptance has been performed;
+- the current 0.80 m candidate has not completed long-distance live motion or
+  repeated hardware acceptance;
+- a 0.90 m preview/prepare dry-run is evidence of validation only, not motion;
 - vendor ROS package files contain unresolved license declarations and are not
   redistributed.
 
-The dated backup must remain intact. Any later production change requires a new
-hash comparison, successful fresh-AMCL/no-goal dry-run, and separate on-site
-motion authorization.
+The on-device backups remain outside this repository. Any later production
+change requires a new hash comparison, successful fresh-AMCL/no-goal dry-run,
+and separate on-site motion authorization.
