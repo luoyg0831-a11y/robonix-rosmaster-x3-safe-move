@@ -1,22 +1,18 @@
 # Deployment Map
 
-## Public repository to Jetson
-
-| Public path | Current Jetson path or role |
+| Repository path | Jetson path or purpose |
 |---|---|
-| `package_manifest.yaml` | Catalog-facing root manifest |
-| `jetson/package_manifest.yaml` | Curated release manifest; the existing local deployment still carries its legacy package identity |
+| `package_manifest.yaml` | Catalog metadata |
+| `jetson/package_manifest.yaml` | Release package metadata |
 | `jetson/main.py` | `rosmaster_x3_deploy/primitives/rosmaster_x3_bridge/rosmaster_x3_bridge/main.py` |
 | `jetson/x3_bridge.py` | `x3_rosbridge_adapter/scripts/x3_bridge.py` |
 | `jetson/scripts/move_base_cli.py` | `rosmaster_x3_deploy/scripts/move_base_cli.py` |
 | `jetson/scripts/move_base` | `rosmaster_x3_deploy/scripts/move_base` |
 
-The source snapshot keeps `main.py` at `jetson/main.py` for offline tests. The
-deployed package imports it from the nested `rosmaster_x3_bridge/` module.
-`scripts/start.sh` supports both layouts without copying or changing production.
+The local Jetson manifest still uses its older package identity. The two
+manifests in this repository use the Catalog package name and version.
 
-The three current runtime source files were copied over SSH on 2026-08-25 and
-match the public files byte for byte:
+## File comparison — 2026-08-25
 
 | File | SHA256 |
 |---|---|
@@ -24,25 +20,19 @@ match the public files byte for byte:
 | `x3_bridge.py` | `425baf888847ca3b2e264ed2e3b50c65118a7ba77718931e55ddac8d503927aa` |
 | `move_base_cli.py` | `4f2637d4bac646bf66ba52641e7511831909e42478b5d115798cff70f0997c9d` |
 
-## Command and environment
+`jetson/main.py` stays at the repository root of the Jetson package so the
+offline tests can import it directly. The deployed package uses the nested
+module path shown above. `scripts/start.sh` supports both layouts.
 
-Inside the `robonix` conda environment, the installed `move_base` command calls
-the deployment wrapper and then `move_base_cli.py`. The wrapper sources the ROS
-and Robonix Python paths and removes legacy execution-gate variables before
-starting the CLI.
+## Runtime
 
-## Build and codegen
+The installed `move_base` command starts the wrapper and then
+`move_base_cli.py` inside the `robonix` conda environment. The wrapper loads the
+ROS and Robonix Python paths and clears old execution-gate variables before the
+CLI starts.
 
-- `jetson/scripts/build.sh` runs Robonix MCP code generation.
-- Generated `rbnx-build/` content is reproducible build output and is not
-  committed.
-- Backups, logs, bytecode, raw maps, and device credentials are excluded from
-  the public snapshot.
+`jetson/scripts/build.sh` runs Robonix MCP code generation. Generated files,
+backups, logs, bytecode, maps, and credentials are not tracked.
 
-## ROS configuration boundary
-
-The inspected ROS1 source workspace is the X3-specific Yahboom workspace. The
-navigation stack uses the laser, AMCL, map server, move_base, rosbridge, base
-driver, and robot_localization files summarized in
-[Recorded ROS Configuration](ros-configuration.md). Vendor files are not copied
-into this repository; only parameter summaries and SHA256 values are published.
+The ROS launch and parameter files used on the X3 are listed by hash in
+[ROS Configuration](ros-configuration.md).

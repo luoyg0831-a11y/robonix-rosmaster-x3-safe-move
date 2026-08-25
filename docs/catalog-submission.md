@@ -1,34 +1,28 @@
-# Package Catalog Submission
+# Robonix Catalog Entry
 
-This repository is a normal primitive package, not a complete robot deployment.
-The default branch must expose the root `package_manifest.yaml` before Catalog
-submission.
-
-The only manual change in the `syswonder/robonix-package-catalog` PR is this
-entry under `packages:`:
+[Catalog PR #21](https://github.com/syswonder/robonix-package-catalog/pull/21)
+passed its checks and was merged on 2026-08-05. The Catalog contains only this
+package reference:
 
 ```yaml
   - name: robonix.primitive.yahboom.rosmaster_x3.safe_move
     repo: https://github.com/luoyg0831-a11y/robonix-rosmaster-x3-safe-move
 ```
 
-The `name` must exactly match `package.name`. Description, version, license,
-tags, maintainers, and capabilities must remain in `package_manifest.yaml` and
-must not be duplicated in `catalog.yaml`.
+The name must match `package.name` in the root `package_manifest.yaml`. Version,
+description, license, tags, maintainers, and capability paths are maintained in
+that manifest rather than copied into the Catalog.
 
-## Pre-submission state
+## Published state
 
-| Requirement | State |
+| Item | Status |
 |---|---|
-| Root `package_manifest.yaml` | Published on the default branch |
-| Required Catalog metadata | Present |
-| Capability names and local TOML paths | Present, eight guarded capabilities |
-| Executable build/start scripts | Git mode `100755` |
-| Package validation/build | PASS on Jetson staging before metadata-only Catalog update |
-| Default branch contains this candidate | Published; repository workflow PASS |
-| Catalog PR | `syswonder/robonix-package-catalog#21`; Catalog CI PASS, merged 2026-08-05 |
-| Hardware acceptance | 0.08 m loop passed; current 0.80 m candidate remains incomplete and is a release warning |
+| Root `package_manifest.yaml` | Present on the default branch |
+| Catalog metadata and eight capability paths | Validated |
+| Build and start scripts | Executable (`100755`) |
+| Catalog PR #21 | Merged; Catalog checks passed |
+| Earlier 0.08 m hardware run | Passed |
+| Current 0.80 m hardware acceptance | Not run |
 
-Catalog CI reads the target repository default branch through the GitHub API.
-The root manifest is now visible in the catalog. PR #21 contained only the
-required `name + repo` entry, and its Package Catalog workflow passed.
+Catalog publication shows that the package metadata is accepted. It does not
+replace the outstanding 0.80 m live test.

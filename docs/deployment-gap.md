@@ -1,23 +1,21 @@
-# Deployment Gap
+# Remaining Work
 
-Completed: current Jetson provider/bridge/CLI snapshot and SHA256 comparison,
-deployment and command mapping, offline syntax and four test suites, safety and
-public-snapshot audits, prior 0.08 m hardware loop, and 0.90 m no-motion
-preview/prepare validation.
+Completed:
 
-Published package state:
+- provider, bridge, and CLI copied from the Jetson and compared by SHA256;
+- local syntax checks, four unit-test suites, and repository checks;
+- Jetson Python 3.10.20 syntax check and deployed CLI unit test;
+- one earlier 0.08 m live run;
+- three preview/prepare checks on an earlier 0.90 m configuration, without
+  sending a goal;
+- Catalog publication through PR #21.
 
-- the Catalog-facing metadata is on the GitHub default branch and the
-  repository offline workflow passes;
+Still required before the current 0.80 m configuration can be treated as
+hardware-tested:
 
-Still open:
+- a fresh no-motion run with AMCL, costmaps, `make_plan`, and `move_base` online;
+- a supervised live run with independent distance and stop monitoring;
+- repeat runs after reviewing localization drift and chassis behavior.
 
-- the current 0.80 m candidate has not completed long-distance live motion or
-  repeated hardware acceptance;
-- a 0.90 m preview/prepare dry-run is evidence of validation only, not motion;
-- vendor ROS package files contain unresolved license declarations and are not
-  redistributed.
-
-The on-device backups remain outside this repository. Any later production
-change requires a new hash comparison, successful fresh-AMCL/no-goal dry-run,
-and separate on-site motion authorization.
+Yahboom ROS files and site maps are not included because their redistribution
+status has not been confirmed.

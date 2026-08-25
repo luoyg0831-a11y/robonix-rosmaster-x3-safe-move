@@ -1,16 +1,17 @@
 # Validation Status
 
-| Layer | Status |
+| Check | Status |
 |---|---|
-| Source safety audit | PASS |
-| Local offline suites | PASS |
-| Current Jetson provider/bridge/CLI hash match | PASS |
-| Catalog metadata and public snapshot audits | PASS |
-| Prior 0.08 m live `move_base` loop | PASS |
-| 0.90 m preview/prepare no-motion validation | PASS; no goal sent |
-| Current 0.80 m long-distance hardware acceptance | NOT PERFORMED |
-| Catalog CI / publication | PASS; PR #21 merged 2026-08-05 |
+| Local syntax and four unit-test suites | PASS |
+| Repository safety, Catalog, privacy, and checksum checks | PASS |
+| Jetson provider/bridge/CLI SHA256 comparison | PASS |
+| Jetson Python 3.10.20 syntax check | PASS |
+| Jetson deployed CLI unit test | PASS |
+| Earlier 0.08 m live run | PASS |
+| Earlier 0.90 m preview/prepare without goal publication | PASS, 3 runs |
+| Live acceptance of the current 0.80 m configuration | NOT RUN |
+| Catalog PR #21 | MERGED, 2026-08-05 |
 
-See [the current evidence](../evidence/validation-2026-08-25.md). Written,
-compiled, staged, production-deployed, run, and hardware-accepted are distinct
-states; this repository remains a candidate.
+The earlier 0.90 m checks covered preview and preparation only. They did not
+move the robot. See the
+[2026-08-25 report](../evidence/validation-2026-08-25.md).

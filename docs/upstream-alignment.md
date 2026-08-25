@@ -1,46 +1,33 @@
-# Alignment with Current Robonix
+# Compatibility with Current Robonix
 
-## Version boundary
+This comparison was refreshed on 2026-08-25 against the Robonix `dev` branch at
+`f718d8d1f2e2d7c150020ad6e184d7754abde0a7`.
 
-This project was developed with an earlier Robonix Python API and targets:
+The X3 package uses an earlier Robonix Python API, generated service bindings,
+ROS1 Melodic, rosbridge, and ROS `move_base`. The current upstream tree still
+contains the navigation service contracts and the Webots `simple_nav` example,
+but its provider lifecycle, Python API, bindings, and contract details have
+changed. This repository cannot be copied into current `dev` unchanged.
 
-- `package_manifest.yaml`;
-- generated MCP/service bindings;
-- ROS1 Melodic and rosbridge;
-- ROS `move_base`.
+## Likely mapping
 
-The current `syswonder/robonix` `dev` branch also uses `package_manifest.yaml`, but its capability-provider lifecycle, Python API, generated bindings, and contract details have evolved. ROS2 is the documented native ROS transport. The local snapshot is therefore not a drop-in package for current `dev`.
-
-## Proposed upstream mapping
-
-The existing global navigation contracts are the natural public boundary:
-
-| Existing component | Current Robonix role |
+| X3 component | Current Robonix counterpart |
 |---|---|
-| ROS1 AMCL, costmap, `make_plan`, and `move_base` adapter | Internal implementation of a navigation service package |
-| Goal execution and correlated result tracking | `robonix/service/navigation/navigate`, `navigate/status`, and `navigate/cancel` |
-| Package lifecycle | `robonix/service/navigation/driver` |
-| Candidate generation, numbered selection, confirmation, and one-time token | Safety policy inside the navigation service or a separately reviewed skill |
-| Numbered `move_base` command | Deployment-specific operations CLI |
+| AMCL, costmap, `make_plan`, and `move_base` adapter | Internal navigation-service implementation |
+| Goal execution and result tracking | `navigation/navigate`, `navigate/status`, and `navigate/cancel` |
+| Package startup and shutdown | `navigation/driver` |
+| Candidate search, numbered selection, confirmation, and token handling | X3-specific safety policy |
+| `move_base` terminal command | Deployment CLI |
 
-Safety gates must remain next to goal publication and cannot exist only in the interactive CLI. The package must not expose legacy direct-goal tools or raw `/cmd_vel` control.
+Goal checks and one-time-token handling need to stay beside goal publication;
+placing them only in the CLI would allow another caller to bypass them. A port
+must also avoid exposing direct coordinates or raw `/cmd_vel` control.
 
-## Open integration decision
+## Next upstream step
 
-The current upstream tree has a Webots `simple_nav` example but no ROS1 ROSMASTER X3 implementation. Maintainer guidance is needed before choosing among:
-
-1. an external deployment package implementing the four existing navigation contracts;
-2. a new hardware example under the upstream repository;
-3. a ROS1 bridge package plus a separate Robonix navigation service.
-
-No new global contract is proposed yet. The existing navigation contracts should be tried first, with any extra safe-short-move contract discussed separately.
-
-## Recommended contribution sequence
-
-1. Freeze and validate this ROS1 companion repository.
-2. Open an upstream integration issue with the public repository and prerelease.
-3. Confirm package placement and ROS1 bridge expectations with maintainers.
-4. Rebase the package on current `dev` APIs and the four navigation contracts.
-5. Submit code only after local current-API tests and Jetson hardware validation.
-
-No pull request should claim hardware completion until the exact submitted revision is tested on the Jetson and robot.
+[Robonix issue #212](https://github.com/syswonder/robonix/issues/212) remains
+open. Before a code contribution, maintainers need to choose whether the ROS1
+support belongs in an external package, an upstream hardware example, or a ROS1
+bridge paired with the current navigation service. After that decision, the
+package can be rebased on the current API and tested again locally and on the
+robot.
